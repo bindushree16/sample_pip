@@ -25,6 +25,138 @@ resources:
 pipelines:
   - name: pipeline_1
     steps:    
+      - name: testjob1
+        type: bash
+        setup:
+          runtime:
+            type: image
+            image:
+             custom:
+               name: drydock/u16all
+               tag: master
+        triggeredBy:
+          resources:
+            - sample_scriptrepo
+        execution:
+          onExecute:
+            - echo "hello"
+            
+      - name: test-job2
+        type: bash
+        setup:
+          runtime:
+            type: image
+            image:
+             custom:
+               name: drydock/u16all
+               tag: master
+        triggeredBy:
+          steps:
+            - testjob1
+        execution:
+          onExecute:
+            - echo "step2"
+
+  - name: pipeline_2
+    steps:    
+      - name: build-test
+        type: bash
+        setup:
+          runtime:
+            type: image
+            image:
+             custom:
+               name: drydock/u16all
+               tag: master
+        triggeredBy:
+          resources:
+            - sample_scriptrepo
+        execution:
+          onExecute:
+            - echo "hello"
+            
+     # - name: test2
+     #   type: bash
+     #   setup:
+     #     runtime:
+     #       type: image
+     #       image:
+     #        custom:
+     #          name: drydock/u16all
+    #           tag: master
+    #    triggeredBy:
+    #      steps:
+    #        - testjob1
+    #    execution:
+    #      onExecute:
+    #        - echo "test2"
+
+    #  - name: push-test3
+    #    type: bash
+    #    setup:
+    #      runtime:
+    #        type: image
+    #        image:
+    #         custom:
+   #            name: drydock/u16all
+   #            tag: master
+   #     requires:
+   #       integrations:
+   #         - artifactorytest
+   #     triggeredBy:
+   #       steps:
+  #          - test2
+  #      execution:
+  #        onExecute:
+  #          - echo "push-Test3"
+
+ #     - name: job2
+ #       type: bash
+#        setup:
+#          runtime:
+ #           type: image
+ #           image:
+ #            custom:
+ #              name: drydock/u16all
+ #              tag: master
+ #       triggeredBy:
+ #         steps:
+ #           - testjob1
+ #       execution:
+ #         onExecute:
+ #           - echo "job2"
+
+
+
+#####
+
+resources:
+  - name: sample_scriptrepo
+    type: gitRepo
+    repoPath: bindushree16/sample_pip
+    configuration:
+      integrationName: github
+      branches:
+        only: master
+      tags:
+        except: none
+        only: none   
+      buildOnCommit: true
+      buildOnPullRequest: true
+      buildOnPullRequestClose: true
+      buildOnRelease: true
+      buildOnTagPush: true
+      buildOnFileCommit: "*test"
+      shallowDepth: 2
+      gitConfig: 
+        - dont_know
+        - dont_know_2
+    initialVersion:
+      sha: master
+  
+pipelines:
+  - name: pipeline_1
+    steps:    
       - name: build-test
         type: bash
         setup:
